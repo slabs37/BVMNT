@@ -1,0 +1,338 @@
+﻿Build1=Default,slabs37.batt.volt
+File1=1.bal
+File10=32.png
+File11=33.png
+File12=34.png
+File13=35.png
+File14=36.png
+File15=37.png
+File16=38.png
+File17=39.png
+File18=40.png
+File19=41.png
+File2=2.bal
+File20=42.png
+File21=43.png
+File22=44.png
+File23=BVMNT.png
+File24=fakebattery.png
+File25=warn.png
+File3=26.png
+File4=27.png
+File5=28.png
+File6=29.png
+File7=3.bal
+File8=30.png
+File9=31.png
+FileGroup1=Default Group
+FileGroup10=Default Group
+FileGroup11=Default Group
+FileGroup12=Default Group
+FileGroup13=Default Group
+FileGroup14=Default Group
+FileGroup15=Default Group
+FileGroup16=Default Group
+FileGroup17=Default Group
+FileGroup18=Default Group
+FileGroup19=Default Group
+FileGroup2=Default Group
+FileGroup20=Default Group
+FileGroup21=Default Group
+FileGroup22=Default Group
+FileGroup23=Default Group
+FileGroup24=Default Group
+FileGroup25=Default Group
+FileGroup3=Default Group
+FileGroup4=Default Group
+FileGroup5=Default Group
+FileGroup6=Default Group
+FileGroup7=Default Group
+FileGroup8=Default Group
+FileGroup9=Default Group
+Group=Default Group
+Library1=core
+Library2=keyvaluestore2
+Library3=nb6
+Library4=superuser
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="30"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~AddPermission("android.permission.ACCESS_SUPERUSER")~\n~~\n~SetApplicationAttribute(android:icon, "@mipmap/ic_launcher")~\n~CreateResource(mipmap-anydpi-v26, ic_launcher.xml,~\n~<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">~\n~<background android:drawable="@mipmap/background"/>~\n~<foreground android:drawable="@mipmap/foreground"/>~\n~</adaptive-icon>~\n~)
+Module1=About
+Module2=Adjust
+Module3=Starter
+Module4=Voltage_notif
+NumberOfFiles=25
+NumberOfLibraries=4
+NumberOfModules=4
+Version=11.8
+@EndOfDesignText@
+#Region  Project Attributes 
+	#ApplicationLabel: BVMNT
+	#VersionCode: 1
+	#VersionName: headache
+	'SupportedOrientations possible values: unspecified, landscape or portrait.
+	#SupportedOrientations: portrait
+	#CanInstallToExternalStorage: False
+	
+	'#AdditionalRes: ../icon
+#End Region
+
+#Region  Activity Attributes 
+	#FullScreen: False
+	#IncludeTitle: True
+	
+#End Region
+
+Sub Process_Globals
+	'These global variables will be declared once when the application starts.
+	'These variables can be accessed from all modules.
+	Dim voltage As String
+	Dim amperage As String
+	Dim VolLocation As String
+	Dim AmpLocation As String
+	Dim wattag As Float
+	Dim su As SuShell
+End Sub
+
+Sub Globals
+	'These global variables will be redeclared each time the activity is created.
+	
+	Private VoltageText As Label
+	Private SetVolPath As Button
+	Private VolPath As EditText
+	Private AmpPath As EditText
+	Private SetAmpPath As Button
+	Private AmpText As Label
+	Private WattText As Label
+	Private ServiceEnable As CheckBox
+	Public EnableAmps As CheckBox
+	Private Dumpsys As CheckBox
+	Private BatteryPath As EditText
+	Private BatteryPathSet As Button
+End Sub
+
+Sub Activity_Create(FirstTime As Boolean)
+	Starter.CheckDivisions
+	Activity.LoadLayout("1")
+	
+	Activity.Title = "Battery Voltage Mocking Notification Thingy"
+	Activity.AddMenuItem("Adjust", "mnuAdjust")
+	Activity.AddMenuItem("About", "mnuAbout")
+	Activity.AddMenuItem("Exit", "mnuExit")
+	
+	'check values and start loop is exist
+	If Starter.kvs.ContainsKey("BatteryPath") Then
+		BatteryPath.Text = Starter.kvs.Get("BatteryPath")
+	Else
+		Starter.kvs.Put("BatteryPath", "/sys/class/power_supply/battery/")
+		BatteryPath.Text = Starter.kvs.Get("BatteryPath")
+	End If
+	
+	If Starter.kvs.ContainsKey("VolLocation") Then
+		VolLocation = Starter.kvs.Get("VolLocation")
+		If File.Exists(Starter.kvs.Get("BatteryPath"), VolLocation) Then
+			GetSetVol
+			VolPath.Text = VolLocation
+		End If
+	End If
+	
+	If Starter.kvs.ContainsKey("AmpLocation") Then
+		AmpLocation = Starter.kvs.Get("AmpLocation")
+		If File.Exists(Starter.kvs.Get("BatteryPath"), AmpLocation) Then
+			GetSetAmp
+			AmpPath.Text = AmpLocation
+		End If
+	End If
+	watt
+	
+	'check checkboxes
+	If Starter.kvs.ContainsKey("MockBatt") Then
+		Dumpsys.Checked = Starter.kvs.Get("MockBatt")
+		Dumpsys_CheckedChange(Starter.kvs.Get("MockBatt"))
+	Else
+		Starter.kvs.Put("MockBatt", False)
+	End If
+	
+	If Starter.kvs.ContainsKey("ShowAmp") Then
+		EnableAmps.Checked = Starter.kvs.Get("ShowAmp")
+		EnableAmps_CheckedChange(Starter.kvs.Get("ShowAmp"))
+	End If
+	
+	If Starter.kvs.ContainsKey("ShowNotif") Then
+		ServiceEnable.Checked = Starter.kvs.Get("ShowNotif")
+		ServiceEnable_CheckedChange(Starter.kvs.Get("ShowNotif"))
+	Else
+		ServiceEnable.Checked = False
+		Dumpsys.Visible = False
+	End If
+End Sub
+
+Sub Activity_Resume
+	If Starter.kvs.ContainsKey("ShowNotif") Then
+		ServiceEnable.Checked = Starter.kvs.Get("ShowNotif")
+		ServiceEnable_CheckedChange(Starter.kvs.Get("ShowNotif"))
+	Else
+		Starter.kvs.Put("ShowNotif", False)
+	End If
+	
+	If Starter.kvs.ContainsKey("MockBatt") Then
+		Dumpsys.Checked = Starter.kvs.Get("MockBatt")
+		Dumpsys_CheckedChange(Starter.kvs.Get("MockBatt"))
+	End If
+End Sub
+
+Sub Activity_Pause (UserClosed As Boolean)
+
+End Sub
+
+Sub GetSetVol
+	voltage = File.ReadString(Starter.kvs.Get("BatteryPath"), VolLocation)
+	VoltageText.Text = "V: " & voltage
+	Sleep(100)
+	GetSetVol
+End Sub
+Sub GetSetAmp
+	amperage = File.ReadString(Starter.kvs.Get("BatteryPath"), AmpLocation)
+	AmpText.Text = "A: " & amperage
+	Sleep(100)
+	GetSetAmp
+End Sub
+
+Private Sub SetVolPath_Click
+	If VolPath.Text.Length = 0 Then
+		If Starter.kvs.ContainsKey("VolLocation") = True Then
+			Starter.kvs.Remove("VolLocation")
+			ToastMessageShow("Please restart the app", False)
+		End If
+	Else
+		If File.Exists(Starter.kvs.Get("BatteryPath"), VolPath.Text) And IsNumber(File.ReadString(Starter.kvs.Get("BatteryPath"), VolPath.Text)) Then
+			Starter.kvs.Put("VolLocation", VolPath.Text)
+			VolLocation = VolPath.Text
+			ToastMessageShow("Set Voltage File", False)
+			GetSetVol
+			watt
+		End If
+	End If
+End Sub
+Private Sub VolPath_EnterPressed
+	SetVolPath_Click
+End Sub
+
+Private Sub SetAmpPath_Click
+	If AmpPath.text.Length = 0 Then
+		If Starter.kvs.ContainsKey("AmpLocation") = True Then
+			Starter.kvs.Remove("AmpLocation")
+			ToastMessageShow("Please restart the app", False)
+		End If
+	Else
+		If File.Exists(Starter.kvs.Get("BatteryPath"), AmpPath.Text) And IsNumber(File.ReadString(Starter.kvs.Get("BatteryPath"), AmpPath.Text)) Then
+			Starter.kvs.Put("AmpLocation", AmpPath.Text)
+			AmpLocation = AmpPath.Text
+			ToastMessageShow("Set Ampere File", False)
+			GetSetAmp
+			watt
+		End If
+	End If
+End Sub
+Private Sub AmpPath_EnterPressed
+	SetAmpPath_Click
+End Sub
+
+Sub watt
+	If Starter.kvs.ContainsKey("VolLocation") And Starter.kvs.ContainsKey("AmpLocation") And Starter.kvs.ContainsKey("BatteryPath") Then
+		wattag=Round(1000*(voltage/Starter.VolDiv)*(amperage/Starter.AmpDiv))
+		WattText.Text = "Usage: " & wattag & "mWh"
+	End If
+	Sleep(100)
+	watt
+End Sub
+
+Private Sub ServiceEnable_CheckedChange(Checked As Boolean)
+If Starter.kvs.ContainsKey("VolLocation") = True Then
+	If Checked = True Then
+		StartService(Voltage_notif)
+		Voltage_notif.StopNotif = False
+		Voltage_notif.ShowNotif = True
+		Starter.kvs.Put("ShowNotif", True)
+		If su.DeviceRooted = True Then
+		Dumpsys.Visible = True
+		End If
+	End If
+	If Checked = False Then
+		StartService(Voltage_notif)
+		Voltage_notif.StopNotif = True
+		Starter.kvs.Put("ShowNotif", False)
+		'dumpsys parts
+		Dumpsys.Visible = False
+		Dumpsys.Checked = False
+		Dumpsys_CheckedChange(False)
+	End If
+Else
+	ServiceEnable.Checked = False
+	Dumpsys.Visible = False
+End If
+End Sub
+Private Sub EnableAmps_CheckedChange(Checked As Boolean)
+	If Checked = True Then
+		AmpPath.Visible = True
+		SetAmpPath.Visible = True
+		AmpText.Visible = True
+		Starter.kvs.Put("ShowAmp", True)
+	End If
+	If Checked = False Then
+		AmpPath.Visible = False
+		SetAmpPath.Visible = False
+		AmpText.Visible = False
+		Starter.kvs.Put("ShowAmp", False)
+	End If
+End Sub
+Private Sub Dumpsys_CheckedChange(Checked As Boolean)
+	If Checked = True Then
+		Starter.kvs.Put("MockBatt", True)
+	End If
+	If Checked = False Then
+		Starter.kvs.Put("MockBatt", False)
+		Log(Voltage_notif.su.Execute("dumpsys battery reset"))
+		Log(Voltage_notif.su.Execute("dumpsys batterymanager reset"))
+	End If
+End Sub
+
+
+Private Sub BatteryPath_EnterPressed
+	If Starter.kvs.ContainsKey("VolLocation") = False And Starter.kvs.ContainsKey("AmpLocation") = False Then
+		BatteryPathDo
+	Else
+		If Starter.kvs.ContainsKey("VolLocation") = True And File.Exists(BatteryPath.Text, VolPath.Text) And IsNumber(File.ReadString(BatteryPath.Text, VolPath.Text)) Then
+			If Starter.kvs.ContainsKey("AmpLocation") = True And File.Exists(BatteryPath.Text, AmpPath.Text) And IsNumber(File.ReadString(BatteryPath.Text, AmpPath.Text)) Then
+				BatteryPathDo
+			End If
+			If Starter.kvs.ContainsKey("AmpLocation") = False Then
+				BatteryPathDo
+			End If
+		End If
+	End If
+End Sub
+Private Sub BatteryPathSet_Click
+	BatteryPath_EnterPressed
+End Sub
+Sub BatteryPathDo
+	If File.IsDirectory(BatteryPath.Text, "") = True Then
+		If BatteryPath.Text.EndsWith("/") = True Then
+			Starter.kvs.Put("BatteryPath", BatteryPath.Text)
+			ToastMessageShow("Set Battery Folder Path", False)
+		Else
+			If File.IsDirectory(BatteryPath.Text & "/", "") Then
+				Starter.kvs.Put("BatteryPath", BatteryPath.Text  & "/")
+				ToastMessageShow("Set Battery Folder Path", False)
+			End If
+		End If
+	End If
+End Sub
+
+Sub mnuAdjust_Click
+	StartActivity(Adjust)
+End Sub
+Sub mnuAbout_Click
+	StartActivity(About)
+End Sub
+Sub mnuExit_Click
+	ExitApplication
+End Sub
