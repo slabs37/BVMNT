@@ -160,10 +160,16 @@ Sub suloop
 			Log(su.Execute("dumpsys " & Starter.kvs.Get("BatteryServiceName") & " set level " & str))
 		End If
 		
-		Dim realp As Int = File.ReadString(BatteryLoc, "capacity")
-		n.Initialize("default", Application.LabelName, "LOW").AutoCancel(False).SmallIcon(LoadBitmap(File.DirAssets, "fakebattery.png"))
-		n.SetDefaults(False,False,False)
-		n.Build("Battery Mocked", realp & "% System Reported Percentage", "tag2", Me).Notify(2)
+		If File.Exists(BatteryLoc, "capacity") Then
+			Dim realp As Int = File.ReadString(BatteryLoc, "capacity")
+			n.Initialize("default", Application.LabelName, "LOW").AutoCancel(False).SmallIcon(LoadBitmap(File.DirAssets, "fakebattery.png"))
+			n.SetDefaults(False,False,False)
+			n.Build("Battery Mocked To " & str & "%", realp & "% System Reported Percentage", "tag2", Me).Notify(2)
+		Else
+			n.Initialize("default", Application.LabelName, "LOW").AutoCancel(False).SmallIcon(LoadBitmap(File.DirAssets, "fakebattery.png"))
+			n.SetDefaults(False,False,False)
+			n.Build("Battery Mocked To " & str & "%", "", "tag2", Me).Notify(2)
+		End If
 		loopongoing = True
 		Sleep(10000)
 		loopongoing = False
