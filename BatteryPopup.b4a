@@ -54,20 +54,21 @@ Library1=core
 Library2=keyvaluestore2
 Library3=nb6
 Library4=superuser
-ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="30"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~AddPermission("android.permission.ACCESS_SUPERUSER")~\n~~\n~SetApplicationAttribute(android:icon, "@mipmap/ic_launcher")~\n~CreateResource(mipmap-anydpi-v26, ic_launcher.xml,~\n~<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">~\n~<background android:drawable="@mipmap/background"/>~\n~<foreground android:drawable="@mipmap/foreground"/>~\n~</adaptive-icon>~\n~)
+Library5=phone
+ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="30"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~AddPermission("android.permission.ACCESS_SUPERUSER")~\n~~\n~SetApplicationAttribute(android:icon, "@mipmap/ic_launcher")~\n~CreateResource(mipmap-anydpi-v26, ic_launcher.xml,~\n~<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">~\n~<background android:drawable="@mipmap/background"/>~\n~<foreground android:drawable="@mipmap/foreground"/>~\n~</adaptive-icon>~\n~)~\n~'remove these as they were for testing an entirely different thing~\n~AddActivityText(Main,~\n~<intent-filter>~\n~<action android:name="android.intent.action.VIEW" />~\n~<category android:name="android.intent.category.DEFAULT" />~\n~<data android:scheme="openapp" android:host="voltage"/>~\n~</intent-filter>)
 Module1=About
 Module2=Adjust
 Module3=Starter
 Module4=Voltage_notif
 NumberOfFiles=25
-NumberOfLibraries=4
+NumberOfLibraries=5
 NumberOfModules=4
 Version=11.8
 @EndOfDesignText@
 #Region  Project Attributes 
 	#ApplicationLabel: BVMNT
 	#VersionCode: 1
-	#VersionName: headache
+	#VersionName: graph
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False

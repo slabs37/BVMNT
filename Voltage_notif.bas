@@ -44,9 +44,16 @@ End Sub
 
 Sub Service_Start (StartingIntent As Intent)
 	If StopNotif = False Then
-		StartServiceAt(Me, DateTime.Now + 1, True)
+		If IsScreenOn = True Then
+			StartServiceAt(Me, DateTime.Now + 1, True)
+			Log("screen on")
+		Else
+			StartServiceAt(Me, DateTime.Now + 60000, True)
+			Log("screen off")
+		End If
 		Voltage_slow
 		suloop
+		
 	End If
 	If StopNotif = True Then
 		If n.IsInitialized Then
@@ -174,4 +181,16 @@ Sub suloop
 		Sleep(10000)
 		loopongoing = False
 	End If
+End Sub
+
+Sub IsScreenOn As Boolean
+	Dim p As Phone
+	If p.SdkVersion < 20 Then Return True 'not worth bothering with Android 4 devices
+	Dim ctxt As JavaObject
+	ctxt.InitializeContext
+	Dim displays() As Object = ctxt.RunMethodJO("getSystemService", Array("display")).RunMethod("getDisplays", Null)
+	For Each display As JavaObject In displays
+		If display.RunMethod("getState", Null) <> 1 Then Return True '1 = Display.STATE_OFF
+	Next
+	Return False
 End Sub
