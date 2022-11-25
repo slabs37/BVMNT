@@ -68,7 +68,7 @@ Version=11.8
 #Region  Project Attributes 
 	#ApplicationLabel: BVMNT
 	#VersionCode: 1
-	#VersionName: graph
+	#VersionName: jester
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False
@@ -170,6 +170,12 @@ Sub Activity_Resume
 	If Starter.kvs.ContainsKey("ShowNotif") Then
 		ServiceEnable.Checked = Starter.kvs.Get("ShowNotif")
 		ServiceEnable_CheckedChange(Starter.kvs.Get("ShowNotif"))
+		If su.DeviceRooted = True Then
+			Dumpsys.Visible = True
+			Else
+			Dumpsys.Visible = False
+		End If
+		
 	Else
 		Starter.kvs.Put("ShowNotif", False)
 	End If
