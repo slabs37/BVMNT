@@ -13,6 +13,6 @@ ModuleClosedNodes1=
 ModuleClosedNodes2=13,14,15,16
 ModuleClosedNodes3=1
 ModuleClosedNodes4=
-NavigationStack=Main,Process_Globals,26,4,Voltage_notif,suloop,173,6,Voltage_notif,Process_Globals,10,2,Voltage_notif,IsScreenOn,173,0,Voltage_notif,Service_Start,44,6,Main,Activity_Create,97,0,Main,EnableAmps_CheckedChange,208,0,Main,ServiceEnable_CheckedChange,203,0,Main,Activity_Resume,114,6,Visual Designer,1.bal,-100,3
+NavigationStack=Voltage_notif,Process_Globals,10,2,Voltage_notif,IsScreenOn,173,0,Main,Activity_Create,97,0,Main,EnableAmps_CheckedChange,208,0,Main,ServiceEnable_CheckedChange,203,0,Main,Activity_Resume,114,6,Visual Designer,1.bal,-100,3,Voltage_notif,Service_Start,38,6,Voltage_notif,Voltage_slow,67,1,Voltage_notif,Service_Create,21,0
 SelectedBuild=0
 VisibleModules=2,3,4,1

@@ -67,8 +67,8 @@ Version=11.8
 @EndOfDesignText@
 #Region  Project Attributes 
 	#ApplicationLabel: BVMNT
-	#VersionCode: 1
-	#VersionName: jester
+	#VersionCode: 3
+	#VersionName: v1.3
 	'SupportedOrientations possible values: unspecified, landscape or portrait.
 	#SupportedOrientations: portrait
 	#CanInstallToExternalStorage: False

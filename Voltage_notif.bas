@@ -25,7 +25,7 @@ Sub Process_Globals
 End Sub
 
 Sub Service_Create
-	Service.AutomaticForegroundMode = Service.AUTOMATIC_FOREGROUND_NEVER
+	Service.AutomaticForegroundMode = Service.AUTOMATIC_FOREGROUND_ALWAYS
 	
 	If Starter.kvs.ContainsKey("BatteryPath") Then
 		BatteryLoc = Starter.kvs.Get("BatteryPath")
@@ -43,6 +43,8 @@ Sub Service_Create
 End Sub
 
 Sub Service_Start (StartingIntent As Intent)
+	StartServiceAt(Me, DateTime.Now + 15 * DateTime.TicksPerMinute, True)
+	
 	If StopNotif = False Then
 		If IsScreenOn = True Then
 			StartServiceAt(Me, DateTime.Now + 1, True)
